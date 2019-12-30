@@ -1,0 +1,5 @@
+#Tue Jun 09 13:58:27 CST 2009
+eclipse.preferences.version=1
+org.eclipse.wst.jsdt.core.compiler.taskCaseSensitive=enabled
+org.eclipse.wst.jsdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL,LOW
+org.eclipse.wst.jsdt.core.compiler.taskTags=TODO,FIXME,XXX,DFHL

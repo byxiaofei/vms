@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="xdoclet2-plugin" default="make.web_module">
+	<property file="build.properties" />
+
+	<property name="encoding" value="UTF-8" />
+
+	<path id="project.class.path">
+		<fileset dir="${basedir}/WebRoot/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement path="${basedir}/build/classes" />
+	</path>
+
+	<target name="init" />
+
+	<property name="dir.project" value="${basedir}" />
+	<property name="dir.project.lib" value="${dir.project}/lib" />
+	<property name="dir.project.src" value="${dir.project}/src" />
+	<property name="dir.project.web_module" value="${dir.project}/WebRoot" />
+	<!--// compile, build and deploy directories //-->
+	<property name="dir.project.compile" value="${dir.project.web_module}/WEB-INF/classes" />
+	<property name="dir.project.resource" value="${dir.project}/common" />
+	<property name="dir.project.build" value="${dir.project}" />
+
+	<property name="dir.common.src" value="${dir.project}/common" />
+
+	<!--// Java compiler options //-->
+	<property name="opt.compile.source" value="1.4" />
+	<property name="opt.compile.target" value="1.4" />
+	<property name="opt.compile.encoding" value="UTF-8" />
+	<property name="opt.compile.deprecation" value="on" />
+	<property name="opt.compile.debug" value="on" />
+	<property name="opt.compile.optimize" value="off" />
+	<!--// Deployment //-->
+	<property name="deploy.file.web_module" value="fal.war" />
+
+	<target name="clean" depends="init">
+		<delete dir="${dir.project.build}" />
+		<delete dir="${dir.project.compile}" />
+	</target>
+
+	<target name="create" depends="clean">
+		<mkdir dir="${dir.project.compile}" />
+		<mkdir dir="${dir.project.build}" />
+	</target>
+
+	<target name="delete_cls">
+		<delete dir="${dir.project.compile}"></delete>
+		<mkdir dir="${dir.project.compile}" />
+	</target>
+
+	<target name="create_cls" depends="delete_cls">
+		<mkdir dir="${dir.project.compile}" />
+	</target>
+
+	<target name="src_compile" depends="comm_compile">
+		<!--// compile the Java source //-->
+		<javac srcdir="${dir.project.src}" destdir="${dir.project.compile}" encoding="${opt.compile.encoding}" source="${opt.compile.source}" target="${opt.compile.source}" deprecation="${opt.compile.deprecation}" debug="${opt.compile.debug}" optimize="{opt.compile.optimize}">
+			<classpath refid="project.class.path" />
+			<include name="**/*.java" />
+		</javac>
+		<!--// copy the classpath resources //-->
+		<copy todir="${dir.project.compile}">
+			<fileset dir="${dir.project.src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!--
+	<target name="jarFmssApi">
+		<delete file="${dir.project}/WebRoot/WEB-INF/lib/fmss-api.jar" verbose="true">
+		</delete>
+		<jar destfile="${dir.project}/WebRoot/WEB-INF/lib/fmss-api.jar" basedir="../../fmss.api/target/classes" />
+	</target>
+	-->
+
+	<target name="comm_compile" depends="create_cls">
+		<!--// compile the Java source //-->
+		<javac srcdir="${dir.common.src}" destdir="${dir.project.compile}" encoding="${opt.compile.encoding}" source="${opt.compile.source}" target="${opt.compile.source}" deprecation="${opt.compile.deprecation}" debug="${opt.compile.debug}" optimize="{opt.compile.optimize}">
+			<classpath refid="project.class.path" />
+			<include name="**/*.java" />
+		</javac>
+		<!--// copy the classpath resources //-->
+		<copy todir="${dir.project.compile}">
+			<fileset dir="${dir.project.resource}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<echo>+---------------------------------------------------+</echo>
+	<echo>|                                                   |</echo>
+	<echo>| R U N N I N G   compile                           |</echo>
+	<echo>|                                                   |</echo>
+	<echo>+---------------------------------------------------+</echo>
+	<!--
+	<target name="compile" depends="jarFmssApi,src_compile" />
+	-->
+	<target name="compile" depends="src_compile" />
+
+	<!--// Build WAR file //-->
+	<echo>+---------------------------------------------------+</echo>
+	<echo>|                                                   |</echo>
+	<echo>| R U N N I N G   warfile                           |</echo>
+	<echo>|                                                   |</echo>
+	<echo>+---------------------------------------------------+</echo>
+	<target name="make.web_module" depends="compile">
+		<war destfile="${dir.project.build}/${deploy.file.web_module}" webxml="${dir.project.web_module}/WEB-INF/web.xml">
+			<fileset dir="${dir.project.web_module}">
+				<include name="**" />
+				<exclude name="WEB-INF/classes/**" />
+			</fileset>
+			<classes dir="${dir.project.compile}">
+				<include name="**" />
+				<exclude name="**/*Test.class" />
+			</classes>
+		</war>
+	</target>
+</project>
